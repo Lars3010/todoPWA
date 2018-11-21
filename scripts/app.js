@@ -33,9 +33,9 @@ jQuery(document).ready(function() {
   'use strict';
   init();
 
-  var idCounter = 10;
+  let idCounter = 10;
 
-  var app = {
+  let app = {
     menuState: 1,
     isLoading: true,
     savedTasks: [],
@@ -59,7 +59,7 @@ app.renderEmpty = function()
 {
     if (!$('.messageContainer').length && !$('.taskListItem').length)
     {
-        var message = {message: "It seems you have <wbr> nothing to do... <br> lucky you"};
+        const message = {message: "It seems you have <wbr> nothing to do... <br> lucky you"};
         app.container.removeAttr('hidden');
         app.container.append(Mustache.render(app.emptyTemplate,message));
 
@@ -79,9 +79,9 @@ app.counter = function()
         // Outputs the length of the database.
         localforage.key(numberOfKeys-1).then(function(value)
         {
-            var sd = value.match(/\d+/);
+            let sd = value.match(/\d+/);
             sd = parseInt(sd[0]);
-            var latestKey = sd;
+            let latestKey = sd;
             idCounter = latestKey + 1;
         }).catch(function(err)
         {
@@ -97,7 +97,6 @@ app.counter = function()
 
 function init()
 {
-    // localforage.clear(app.clearTheDB);
     localforage.startsWith('task').then(function(value)
     {
         if (value == null)
@@ -114,7 +113,6 @@ function init()
                 app.container.removeAttr('hidden');
                 app.isLoading = false;
             }
-            console.log('oops');
         }
     }).catch(function(err)
     {
@@ -124,7 +122,7 @@ function init()
 
 app.setCounter = function() {
     if(idCounter > 0){
-        var keyVal = 'task_' + idCounter;
+        let keyVal = 'task_' + idCounter;
     }
     idCounter++;
     return keyVal;
@@ -133,8 +131,8 @@ app.setCounter = function() {
 /*add task and show on screen, call savetask to save to indexedDB. Also remove the emptyscreen*/
 app.addTask = function(taskInput)
 {
-    var counter = app.setCounter();
-    var task = {task: taskInput, id: counter};
+    const counter = app.setCounter();
+    const task = {task: taskInput, id: counter};
     console.log(task);
     app.card.removeAttr('hidden');
     $('#listContainer').append(Mustache.render(app.cardTemplate,task));
@@ -151,7 +149,7 @@ app.addTask = function(taskInput)
 /*event handler for textbox and button. calls addtask to add a task. Returns false to prevent form submission*/
 $('#butAdd').click(function()
 {
-    var taskInput = $('#taskInput').val();
+    let taskInput = $('#taskInput').val();
     taskInput = taskInput.trim();
     console.log(taskInput);
     if (taskInput != '')
@@ -172,7 +170,7 @@ $('#butDelete').click(function()
 //click outside menu hides menu
 $(document).on("click", $(document), function(event)
 {
-    var target = event.target; //target div recorded
+    let target = event.target; //target div recorded
     if (!$(target).is('.itemOption') )
     {
         app.hideMenu();
@@ -197,8 +195,8 @@ $('#listContainer').on("click","#butItemOptions",function(event)
 /*Remove item eventhandler*/
 $('#listContainer').on("click", ".itemOptionDelete", function(event)
 {
-    var deleteButton = event.target;
-    var deleteButtonParentID = $(deleteButton).closest('.taskListItem').attr('id');
+    const deleteButton = event.target;
+    const deleteButtonParentID = $(deleteButton).closest('.taskListItem').attr('id');
     localforage.removeItem(deleteButtonParentID).then(function(results)
     {
         console.log('Item Removed');
@@ -213,8 +211,8 @@ $('#listContainer').on("click", ".itemOptionDelete", function(event)
 
 $('#listContainer').on("click", ".itemOptionEdit", function(event)
 {
-    var editButton = event.target;
-    var editButtonParent = $(editButton).closest('.taskListItem');
+    const editButton = event.target;
+    const editButtonParent = $(editButton).closest('.taskListItem');
     app.editTask(editButtonParent);
     app.hideMenu();
 });
@@ -222,8 +220,8 @@ $('#listContainer').on("click", ".itemOptionEdit", function(event)
 $('#listContainer').on("click", "#taskMessage", function(event)
 {
     console.log('clickedy click');
-    var editButton = event.target;
-    var editButtonParent = $(editButton).closest('.taskListItem');
+    const editButton = event.target;
+    const editButtonParent = $(editButton).closest('.taskListItem');
     app.editTask(editButtonParent);
 });
 
@@ -232,19 +230,18 @@ if it is changed it will change the task status to unfinished or finished*/
 $(document).on("change",".checkboxDone",function(event){
     if ($(this).prop('checked'))
     {
-        var checkbox = event.target;
-        var parentListItem = $(checkbox).parent();
-        var parentListItemValue = parentListItem.attr('id');
+        const checkbox = event.target;
+        const parentListItem = $(checkbox).parent();
+        const parentListItemValue = parentListItem.attr('id');
         console.log(parentListItemValue);
 
         app.setTaskStatus(parentListItemValue, parentListItem);
     }
     else
     {
-        var checkbox = event.target;
-        var parentListItem = $(checkbox).parent();
-
-        var parentListItemValue = parentListItem.attr('id');
+        const checkbox = event.target;
+        const parentListItem = $(checkbox).parent();
+        const parentListItemValue = parentListItem.attr('id');
         console.log(parentListItemValue);
         app.setTaskStatus(parentListItemValue, parentListItem);
     }
@@ -283,17 +280,17 @@ app.saveTask = function(counter)
 
 app.editTask = function(editButtonParent)
 {
-    var taskID = $(editButtonParent).attr('id');
+    const taskID = $(editButtonParent).attr('id');
     localforage.getItem(taskID).then(function(item)
     {
         console.log(item);
         console.log(editButtonParent);
-        var taskStatus = item.taskStatus;
-        var obj = $(editButtonParent).find('p');
-        var id = $(obj).attr('id');
-        var editingID = id.replace('taskMessage', 'taskMessage_editing');
-        var inputContainer = $('<div />', {'class': 'editContainer'});
-        var input = $('<input />', { 'type': 'text', 'id': editingID, 'class': 'editBox', 'value': $(obj).html().trim() });
+        let taskStatus = item.taskStatus;
+        let obj = $(editButtonParent).find('p');
+        let id = $(obj).attr('id');
+        let editingID = id.replace('taskMessage', 'taskMessage_editing');
+        let inputContainer = $('<div />', {'class': 'editContainer'});
+        let input = $('<input />', { 'type': 'text', 'id': editingID, 'class': 'editBox', 'value': $(obj).html().trim() });
         $(obj).after(inputContainer);
         $(inputContainer).append(input);
         $(obj).remove();
@@ -301,12 +298,12 @@ app.editTask = function(editButtonParent)
         input.blur(function()
         {
 
-            var obj = $('.editBox');
-            var id = $(obj).attr('id');
-            var value = $(obj).val();
-            var task = {task: value, taskStatus: taskStatus};
-            var editingID = id.replace('taskMessage_editing', 'taskMessage');
-            var input = $('<p />', { 'id': editingID, 'html': value });
+            let obj = $('.editBox');
+            let id = $(obj).attr('id');
+            let value = $(obj).val();
+            let task = {task: value, taskStatus: taskStatus};
+            let editingID = id.replace('taskMessage_editing', 'taskMessage');
+            let input = $('<p />', { 'id': editingID, 'html': value });
             localforage.setItem(taskID, task );
             $(inputContainer).parent().find('.checkboxDone').before(input);
             $(obj).remove();
@@ -335,12 +332,12 @@ app.renderTasks = function(results)
 
 app.showItemOptions = function(event)
 {
-    var target = event.target;
-    var containerListItem = $(target).next();
+    const target = event.target;
+    const containerListItem = $(target).next();
     $(containerListItem).append(Mustache.render(app.optionsTemplate));
     if(!$('.ItemOptionsMenuContainer').visible(false, false))
     {
-        var menu_height = $('.ItemOptionsMenuContainer').closest('.taskListItem').outerHeight();
+        const menu_height = $('.ItemOptionsMenuContainer').closest('.taskListItem').outerHeight();
         $('.ItemOptionsMenuContainer').css({'top': 'auto'});
         $('.ItemOptionsMenuContainer').css({'bottom': menu_height});
     }
