@@ -1,0 +1,24 @@
+{
+  "name": "localforage-startswith",
+  "version": "1.2.0",
+  "main": [
+    "dist/localforage-startswith.js"
+  ],
+  "ignore": [
+    ".travis.yml",
+    "CONTRIBUTING.md",
+    "config.rb",
+    "Gemfile",
+    "Gemfile.lock",
+    "Rakefile",
+    "LICENSE",
+    "build*",
+    "docs*",
+    "examples*",
+    "test*",
+    "site*"
+  ],
+  "dependencies": {
+    "localforage": ">=1.4.0"
+  }
+}
