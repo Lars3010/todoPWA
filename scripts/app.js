@@ -13,6 +13,7 @@
 // limitations under the License.
 /*
 *   TODO
+    - update app object as new object instead of the current inplementation
 */
 
 
@@ -46,54 +47,62 @@ jQuery(document).ready(function() {
             optionsTemplate: $('#ItemOptionsTemplate').html(),
             container: $('.main'),
             addDialog: $('.dialog-container'),
-        };
-
-        /*clear the DB - duh*/
-        app.clearTheDB = function clearDB()
-        {
-            console.log('IndexedDB Cleared');
-        }
-
-        /*Render empty template displaying empty screen and message*/
-        app.renderEmpty = function()
-        {
-            if (!$('.messageContainer').length && !$('.taskListItem').length)
-            {
-                const message = {message: "It seems you have <wbr> nothing to do... <br> lucky you"};
-                app.container.removeAttr('hidden');
-                app.container.append(Mustache.render(app.emptyTemplate,message));
-
-                if (app.isLoading) {
-                    app.spinner.attr('hidden', true);
-                    app.container.removeAttr('hidden');
-                    app.isLoading = false;
-                }
-            }
-
-        }
-
-        app.counter = function()
-        {
-            localforage.length().then(function(numberOfKeys)
-            {
-                // Outputs the length of the database.
-                localforage.key(numberOfKeys-1).then(function(value)
+            addTask: function(taskInput) {
+                /*add task and show on screen, call savetask to save to indexedDB. Also remove the emptyscreen*/
+                const counter = app.setCounter();
+                const task = {task: taskInput, id: counter};
+                console.log(task);
+                app.card.removeAttr('hidden');
+                $('#listContainer').append(Mustache.render(app.cardTemplate,task));
+                app.savedTask = {task: taskInput, taskStatus: 'unfinished'};
+                app.saveTask(counter);
+                $('.messageContainer').remove();
+            },
+            renderEmpty: function(){
+                /*Render empty template displaying empty screen and message*/
+                if (!$('.messageContainer').length && !$('.taskListItem').length)
                 {
-                    let sd = value.match(/\d+/);
-                    sd = parseInt(sd[0]);
-                    let latestKey = sd;
-                    idCounter = latestKey + 1;
+                    const message = {message: "It seems you have <wbr> nothing to do... <br> lucky you"};
+                    app.container.removeAttr('hidden');
+                    app.container.append(Mustache.render(app.emptyTemplate,message));
+
+                    if (app.isLoading) {
+                        app.spinner.attr('hidden', true);
+                        app.container.removeAttr('hidden');
+                        app.isLoading = false;
+                    }
+                }
+            },
+            counter: function(){
+                localforage.length().then(function(numberOfKeys)
+                {
+                    // Outputs the length of the database.
+                    localforage.key(numberOfKeys-1).then(function(value)
+                    {
+                        let sd = value.match(/\d+/);
+                        sd = parseInt(sd[0]);
+                        let latestKey = sd;
+                        idCounter = latestKey + 1;
+                    }).catch(function(err)
+                    {
+                        // This code runs if there were any errors
+                        console.log(err);
+                    });
                 }).catch(function(err)
                 {
                     // This code runs if there were any errors
                     console.log(err);
                 });
-            }).catch(function(err)
-            {
-                // This code runs if there were any errors
-                console.log(err);
-            });
-        }
+            },
+            setCounter: function(){
+                if(idCounter > 0){
+                    let keyVal = 'task_' + idCounter;
+                }
+                idCounter++;
+                return keyVal;
+            }
+        };
+
 
         function init()
         {
@@ -118,27 +127,6 @@ jQuery(document).ready(function() {
             {
                 console.error(err);
             });
-        }
-
-        app.setCounter = function() {
-            if(idCounter > 0){
-                let keyVal = 'task_' + idCounter;
-            }
-            idCounter++;
-            return keyVal;
-        }
-
-        /*add task and show on screen, call savetask to save to indexedDB. Also remove the emptyscreen*/
-        app.addTask = function(taskInput)
-        {
-            const counter = app.setCounter();
-            const task = {task: taskInput, id: counter};
-            console.log(task);
-            app.card.removeAttr('hidden');
-            $('#listContainer').append(Mustache.render(app.cardTemplate,task));
-            app.savedTask = {task: taskInput, taskStatus: 'unfinished'};
-            app.saveTask(counter);
-            $('.messageContainer').remove();
         }
 
         /*****************************************************************************
@@ -167,7 +155,7 @@ jQuery(document).ready(function() {
             return false;
         });
 
-//click outside menu hides menu
+        //click outside menu hides menu
         $(document).on("click", $(document), function(event)
         {
             let target = event.target; //target div recorded
