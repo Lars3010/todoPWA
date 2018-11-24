@@ -330,7 +330,7 @@ body
 
 .taskListItem .checkboxDone
 {
-    flex-shrink: : 0;
+    flex-shrink: 0;
     transform: scale(1.7);
 }
 
